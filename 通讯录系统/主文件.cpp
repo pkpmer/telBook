@@ -31,8 +31,7 @@ struct telBook
 	int size;
 };
 //添加联系人
-void addPerson(telBook* tB)
-{
+void addPerson(telBook* tB){
 	//判断通讯录是否已满
 	if (tB->size == max) { //"->"是指针的指向运算符，常与数据体联用，表示取值
 		cout << "通讯录已满!";
@@ -69,7 +68,7 @@ void addPerson(telBook* tB)
 		cin >> addr;
 		tB->perArray[tB->size].addr = addr;
 		//以追加方式打开文件
-		ofstream outFile("D:\\Microsoft Visual Studio\\Project\\通讯录系统\\通讯录系统\\通讯库.txt", ios_base::app);
+		ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt", ios_base::app);
 		if (!outFile)//判断文件是否打开
 			cerr << "之前操作无法写入库内！";
 		else
@@ -78,10 +77,24 @@ void addPerson(telBook* tB)
 			<< tB->perArray[tB->size].gender << "  "
 			<< tB->perArray[tB->size].age << "  "
 			<< tB->perArray[tB->size].tel << "  "
-			<< tB->perArray[tB->size].addr << " ;";
+			<< tB->perArray[tB->size].addr;
 		tB->size++;
 		cout << "-------- 输入完成 --------" << endl;
 	}
+}
+//显示所有联系人
+void showAll(telBook* tB) {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
+	ifstream infile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
+	string name;
+	int gender = 3;
+	int age = 0;
+	string tel;
+	string addr;
+	while (infile >> name) {
+		infile >> gender >> age >> tel >> addr;
+		cout << name << " " << gender << " " << age << " " << tel << " " << addr << endl << endl;
+	}
+	cout << "---------- 以上 ----------" << endl;
 }
 //主函数
 int main() {
@@ -91,12 +104,14 @@ int main() {
 	int slct = 0;//输入的数字
 	cin >> slct;
 	bool flag = true;
+	//flag = new bool;//动态分配
 	while (flag) {
 		switch (slct) {
 		case 1:// 1.添加联系人
 			addPerson(&tB);
 			break;
 		case 2:// 2.显示联系人
+			showAll(&tB);
 			break;
 		case 3:// 3.删除联系人
 			break;
