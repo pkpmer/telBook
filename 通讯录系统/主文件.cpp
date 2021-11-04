@@ -125,7 +125,7 @@ int main() {
 		case 0:// 0.退出通讯录
 			cout << "-------- 系统关闭 --------" << endl;
 			flag = false;
-			//system("pause");
+			system("pause");
 			break;
 		default:
 			cout << "请按提示输入！giao！" << endl;
