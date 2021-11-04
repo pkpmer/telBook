@@ -16,8 +16,7 @@ void showMenu() {
 		<< "**************************" << endl;
 }
 //ÁªÏµÈË½á¹¹Ìå
-struct person
-{
+struct person {
 	string name;
 	int gender = 3;//1--ÄĞ£¬2--Å®£¬3--Î´ÖªĞÔ±ğ
 	int age = 0;//0´ú±íÎ´ÖªÄêÁä
@@ -25,8 +24,7 @@ struct person
 	string addr;
 };
 //Í¨Ñ¶Â¼½á¹¹Ìå
-struct telBook
-{
+struct telBook {
 	struct person perArray[max];//ÁªÏµÈËÊı×é
 	int size;
 };
@@ -80,6 +78,7 @@ void addPerson(telBook* tB){
 			<< tB->perArray[tB->size].addr;
 		tB->size++;
 		cout << "-------- ÊäÈëÍê³É --------" << endl;
+		outFile.close();
 	}
 }
 //ÏÔÊ¾ËùÓĞÁªÏµÈË
@@ -95,6 +94,7 @@ void showAll(telBook* tB) {//Ó¦¸ÃÒ²¿ÉÒÔÊ¹ÓÃ´«ÖµµÄ·½Ê½£¬ÒòÎªÖ»ÊÇÆğµ½ÁËÒ»¸öÏÔÊ¾µÄ×
 		cout << name << " " << gender << " " << age << " " << tel << " " << addr << endl << endl;
 	}
 	cout << "---------- ÒÔÉÏ ----------" << endl;
+	infile.close();
 }
 //Ö÷º¯Êı
 int main() {
@@ -104,14 +104,15 @@ int main() {
 	int slct = 0;//ÊäÈëµÄÊı×Ö
 	cin >> slct;
 	bool flag = true;
-	//flag = new bool;//¶¯Ì¬·ÖÅä
 	while (flag) {
 		switch (slct) {
 		case 1:// 1.Ìí¼ÓÁªÏµÈË
 			addPerson(&tB);
+			cin >> slct;
 			break;
 		case 2:// 2.ÏÔÊ¾ÁªÏµÈË
 			showAll(&tB);
+			cin >> slct;
 			break;
 		case 3:// 3.É¾³ıÁªÏµÈË
 			break;
@@ -123,12 +124,12 @@ int main() {
 			break;
 		case 0:// 0.ÍË³öÍ¨Ñ¶Â¼
 			cout << "-------- ÏµÍ³¹Ø±Õ --------" << endl;
+			flag = false;
 			//system("pause");
 			break;
 		default:
 			cout << "Çë°´ÌáÊ¾ÊäÈë£¡giao£¡" << endl;
+			cin >> slct;
 		}
-		if (!(cin >> slct))
-			flag = false;
 	}
 }
