@@ -1,7 +1,7 @@
 #include<iostream>
 #include<string>
 #include<fstream>
-#define max 100
+#define max 150//！！数字过大会超过16k
 using namespace std;
 //显示菜单
 void showMenu() {
@@ -18,24 +18,21 @@ void showMenu() {
 //联系人结构体
 struct person {
 	string name;
-	int gender;//1--男，2--女
-	int age;
+	int gender = 0;//1--男，2--女
+	int age = 0;
 	string tel;
 	string addr;
 };
 //通讯录结构体
 struct telBook {
 	struct person perArray[max];//联系人数组
-	int size;
+	int size = 0;
 };
-//读取txt文件到结构体数组中
+//读取txt文件所有内容到结构体数组中
 void getItIn(telBook* tB) {
 	ifstream infile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-	string name;
-	int gender;
-	int age;
-	string tel;
-	string addr;
+	string name, tel, addr;
+	int gender, age;
 	tB->size = 0;
 	while (infile >> name) {
 		infile >> gender >> age >> tel >> addr;
@@ -44,42 +41,29 @@ void getItIn(telBook* tB) {
 		tB->perArray[tB->size].age = age;
 		tB->perArray[tB->size].tel = tel;
 		tB->perArray[tB->size].addr = addr;
-		(tB->size)++;//暂时假设数组大小不会超过1000，所以没有做检验
+		(tB->size)++;//暂时假设数组大小不会超过150，所以没有做检验
 	}
 	infile.close();
 }
-//读取结构体数组到txt文件中
+//读取结构体数组所有内容到txt文件中，需要与getItIn配合使用
 void getItOut(telBook* tB) {
-	ifstream inFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-	if (!inFile)//判断文件是否打开
-		cerr << "无法打开文件！" << endl;
-	ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt", ios_base::app);
-	char checkEmpty;
-	inFile >> checkEmpty;
-	if (inFile.eof()) {
-		if (!outFile)//判断文件是否打开
-			cerr << "之前操作无法写入库内！";
-		else {
-			outFile << tB->perArray[tB->size].name << "\t"
-				<< tB->perArray[tB->size].gender << "\t"
-				<< tB->perArray[tB->size].age << "\t"
-				<< tB->perArray[tB->size].tel << "\t"
-				<< tB->perArray[tB->size].addr;
-			outFile.close();
-		}
-	}
+	ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
+	if (!outFile)//判断文件是否打开
+		cerr << "之前操作无法写入库内！";
 	else {
-		if (!outFile)//判断文件是否打开
-			cerr << "之前操作无法写入库内！";
-		else {
-			outFile << endl << tB->perArray[tB->size].name << "\t"
-				<< tB->perArray[tB->size].gender << "\t"
-				<< tB->perArray[tB->size].age << "\t"
-				<< tB->perArray[tB->size].tel << "\t"
-				<< tB->perArray[tB->size].addr;
-			outFile.close();
-		}
+		outFile << tB->perArray[0].name << "\t"
+			<< tB->perArray[0].gender << "\t"
+			<< tB->perArray[0].age << "\t"
+			<< tB->perArray[0].tel << "\t"
+			<< tB->perArray[0].addr;
+		for (int i = 1; i < tB->size; i++)
+			outFile << endl << tB->perArray[i].name << "\t"
+			<< tB->perArray[i].gender << "\t"
+			<< tB->perArray[i].age << "\t"
+			<< tB->perArray[i].tel << "\t"
+			<< tB->perArray[i].addr;
 	}
+	outFile.close();
 }
 //1.添加联系人
 void addPerson(telBook* tB){
@@ -157,13 +141,41 @@ void showAll() {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
 	getItIn(&tB);
 	for (int i = 0; i < tB.size; i++) {
 		cout << tB.perArray[i].name << "\t"
-			<< tB.perArray[i].gender << "\t"
+			<< (tB.perArray[i].gender == 1 ? "男" : "女") << "\t"
 			<< tB.perArray[i].age << "\t"
 			<< tB.perArray[i].tel << "\t"
 			<< tB.perArray[i].addr << "\t"
 			<< endl << endl;
 	}
 	cout << "---------- 以上 ----------" << endl;
+	system("pause");
+	system("cls");
+	//函数退出后结构体会被直接释放
+}
+//3.删除联系人
+void deleteIndvl(string individual) {
+	telBook tB;
+	getItIn(&tB);
+	--tB.size;//多记了一行
+	for (int i = 0; i < tB.size; i++) {
+		if (tB.perArray[i].name == individual) {
+			for (int j = i; j < tB.size; j++) {
+				tB.perArray[j].name = tB.perArray[j + 1].name;
+				tB.perArray[j].gender = tB.perArray[j + 1].gender;
+				tB.perArray[j].age = tB.perArray[j + 1].age;
+				tB.perArray[j].tel = tB.perArray[j + 1].tel;
+				tB.perArray[j].addr = tB.perArray[j + 1].addr;
+			}
+			tB.perArray[tB.size].name = "";//清空最后一行
+			tB.perArray[tB.size].gender = 0;
+			tB.perArray[tB.size].age = 0;
+			tB.perArray[tB.size].tel = "";
+			tB.perArray[tB.size].addr = "";
+			break;
+		}
+	}
+	getItOut(&tB);
+	cout << "-------- 删除完成 --------" << endl;
 	system("pause");
 	system("cls");
 }
@@ -183,8 +195,13 @@ int main() {
 		case 2:// 2.显示联系人
 			showAll();
 			break;
-		case 3:// 3.删除联系人
+		case 3: {// 3.删除联系人
+			cout << "请输入需要删除的联系人姓名：" << endl;
+			string individual;
+			cin >> individual;
+			deleteIndvl(individual);
 			break;
+		}
 		case 4:// 4.查找联系人
 			break;
 		case 5:// 5.修改联系人
