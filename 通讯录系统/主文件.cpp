@@ -86,9 +86,8 @@ void addPerson(telBook* tB){
 		tB->perArray[tB->size].gender = gender;
 		//添加年龄
 		int age = 0;
-		cout << '\n' << "*请输入年龄(如果未知可填“0”):" << endl;//建议修改为捕捉回车键
-		if (cin >> age)
-			tB->perArray[tB->size].age = age;
+		cout << '\n' << "*请输入年龄:" << endl;//建议修改为捕捉回车键
+		cin >> age;
 		//添加电话
 		string tel;
 		cout << '\n' << "*请输入电话:" << endl;
@@ -157,7 +156,8 @@ void deleteIndvl(string individual) {
 	telBook tB;
 	getItIn(&tB);
 	--tB.size;//多记了一行
-	for (int i = 0; i < tB.size; i++) {
+	int i; bool check = false;
+	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
 			for (int j = i; j < tB.size; j++) {
 				tB.perArray[j].name = tB.perArray[j + 1].name;
@@ -171,11 +171,88 @@ void deleteIndvl(string individual) {
 			tB.perArray[tB.size].age = 0;
 			tB.perArray[tB.size].tel = "";
 			tB.perArray[tB.size].addr = "";
+			check = false;
 			break;
 		}
 	}
 	getItOut(&tB);
+	if (!check)
+		cout << endl << "*联系人不存在" << endl << endl;
 	cout << "-------- 删除完成 --------" << endl;
+	system("pause");
+	system("cls");
+}
+//4.查找联系人
+void search(string individual) {
+	telBook tB;
+	getItIn(&tB);
+	--tB.size;//多记了一行
+	int i; bool check = false;
+	for (i = 0; i < tB.size; i++) {
+		if (tB.perArray[i].name == individual) {
+			cout <<endl << tB.perArray[i].name << "\t"
+				<< (tB.perArray[i].gender == 1 ? "男" : "女") << "\t"
+				<< tB.perArray[i].age << "\t"
+				<< tB.perArray[i].tel << "\t"
+				<< tB.perArray[i].addr << endl <<endl;
+			check = true;//用来判断列表中有无此人
+			break;
+		}
+	}
+	if(!check)
+		cout << endl << "*查无此人" << endl << endl;
+	cout << "-------- 查询完成 --------" << endl;
+	system("pause");
+	system("cls");
+}
+//5.修改联系人
+void modify(string individual) {
+	telBook tB;
+	getItIn(&tB);
+	--tB.size;//多记了一行
+	string name;
+	cout << "*请输入名字:" << endl;cin >> name;
+	int gender = 3;
+	cout << '\n' << "*请输入性别:" << endl<< "1--男，2--女 " << endl;cin >> gender;
+	int age = 0;
+	cout << '\n' << "*请输入年龄:" << endl; cin >> age;
+	string tel;
+	cout << '\n' << "*请输入电话:" << endl;cin >> tel;
+	string addr;
+	cout << '\n' << "*请输入住址:" << endl;cin >> addr;
+	int i; bool check = false;
+	for (i = 0; i < tB.size; i++) {
+		if (tB.perArray[i].name == individual) {
+			tB.perArray[i].name = name;
+			tB.perArray[i].gender = gender;
+			tB.perArray[i].age = age;
+			tB.perArray[i].tel = tel;
+			tB.perArray[i].addr = addr;
+			check = true;//用来判断列表中有无此人
+			break;
+		}
+	}
+	if (!check)
+		cout << endl << "*联系人不存在" << endl << endl;
+	cout << "-------- 查询完成 --------" << endl;
+	getItOut(&tB);
+	system("pause");
+	system("cls");
+}
+//6.清空联系人
+void destroy() {
+	telBook tB;
+	getItIn(&tB);
+	--tB.size;//多记了一行
+	for (int i = 0; i < tB.size; i++) {
+			tB.perArray[tB.size].name = "";
+			tB.perArray[tB.size].gender = 0;
+			tB.perArray[tB.size].age = 0;
+			tB.perArray[tB.size].tel = "";
+			tB.perArray[tB.size].addr = "";
+	}
+	getItOut(&tB);
+	cout << "-------- 清空完成 --------" << endl;
 	system("pause");
 	system("cls");
 }
@@ -196,18 +273,36 @@ int main() {
 			showAll();
 			break;
 		case 3: {// 3.删除联系人
-			cout << "请输入需要删除的联系人姓名：" << endl;
+			cout << endl << "请输入需要删除的联系人姓名：" << endl;
 			string individual;
 			cin >> individual;
 			deleteIndvl(individual);
 			break;
 		}
-		case 4:// 4.查找联系人
+		case 4: {// 4.查找联系人
+			cout << endl << "请输入需要查询的联系人姓名：" << endl;
+			string individual;
+			cin >> individual;
+			search(individual);
+			break; 
+		}
+		case 5: {// 5.修改联系人
+			cout << endl << "请输入需要修改的联系人姓名：" << endl;
+			string individual;
+			cin >> individual;
+			modify(individual);
+			break; 
+		}
+		case 6: {// 6.清空联系人
+			cout << endl << "确认删除[y/n]:";
+			string dsty;//字符串必须定义大小
+			cin >> dsty;
+			if ((dsty == "y") || (dsty == "Y"))
+				destroy();
+			system("pause");
+			system("cls");
 			break;
-		case 5:// 5.修改联系人
-			break;
-		case 6:// 6.清空联系人
-			break;
+		}
 		case 0:// 0.退出通讯录
 			cout << "-------- 系统关闭 --------" << endl;
 			flag = false;
