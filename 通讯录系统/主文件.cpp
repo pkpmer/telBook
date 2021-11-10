@@ -70,20 +70,15 @@ void addPerson(telBook* tB){
 	else {
 		//添加姓名
 		string name, gender, age, tel, addr;
-		cout << "*请输入名字:" << endl;
-		cin >> name;
+		cout << "*请输入名字:" << endl;cin >> name;
 		tB->perArray[tB->size].name = name;
-		cout << '\n' << "*请输入性别:" << endl;
-		cin >> gender;
+		cout << '\n' << "*请输入性别:" << endl;cin >> gender;
 		tB->perArray[tB->size].gender = gender;
-		cout << '\n' << "*请输入年龄:" << endl;
-		cin >> age;
+		cout << '\n' << "*请输入年龄:" << endl;cin >> age;
 		tB->perArray[tB->size].age = age;
-		cout << '\n' << "*请输入电话:" << endl;
-		cin >> tel;
+		cout << '\n' << "*请输入电话:" << endl;cin >> tel;
 		tB->perArray[tB->size].tel = tel;
-		cout << '\n' << "*请输入住址:" << endl;
-		cin >> addr;
+		cout << '\n' << "*请输入住址:" << endl;cin >> addr;
 		tB->perArray[tB->size].addr = addr;
 		ifstream inFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
 		if (!inFile)//判断文件是否打开
@@ -122,7 +117,7 @@ void addPerson(telBook* tB){
 	system("cls");//清除屏幕
 }
 //2.显示所有联系人
-void showAll() {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
+void showAll() {
 	telBook tB;
 	getItIn(&tB);
 	for (int i = 0; i < tB.size; i++) {
@@ -135,8 +130,7 @@ void showAll() {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
 	}
 	cout << "---------- 以上 ----------" << endl;
 	system("pause");
-	system("cls");
-	//函数退出后结构体会被直接释放
+	system("cls");//函数退出后结构体会被直接释放
 }
 //3.删除联系人
 void deleteIndvl(string individual) {
@@ -161,9 +155,9 @@ void deleteIndvl(string individual) {
 			break;
 		}
 	}
-	getItOut(&tB);
 	if (!check)
 		cout << endl << "*联系人不存在" << endl << endl;
+	getItOut(&tB);
 	cout << "-------- 删除完成 --------" << endl;
 	system("pause");
 	system("cls");
@@ -214,7 +208,7 @@ void modify(string individual) {
 	}
 	if (!check)
 		cout << endl << "*联系人不存在" << endl << endl;
-	cout << "-------- 查询完成 --------" << endl;
+	cout << "-------- 修改完成 --------" << endl;
 	getItOut(&tB);
 	system("pause");
 	system("cls");
