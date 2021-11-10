@@ -61,7 +61,7 @@ void getItOut(telBook* tB) {
 	outFile.close();
 }
 //1.添加联系人
-void addPerson(telBook* tB){
+void addPerson(telBook* tB){//首行空行的bug仍然存在
 	//判断通讯录是否已满
 	if (tB->size == max) { //"->"是指针的指向运算符，常与数据体联用，表示取值
 		cout << "通讯录已满!";
@@ -139,20 +139,11 @@ void deleteIndvl(string individual) {
 	int i; bool check = false;
 	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
-			for (int j = i; j < tB.size; j++) {
-				tB.perArray[j].name = tB.perArray[j + 1].name;
-				tB.perArray[j].gender = tB.perArray[j + 1].gender;
-				tB.perArray[j].age = tB.perArray[j + 1].age;
-				tB.perArray[j].tel = tB.perArray[j + 1].tel;
-				tB.perArray[j].addr = tB.perArray[j + 1].addr;
-			}
-			tB.perArray[tB.size].name = '\0';//清空最后一行
-			tB.perArray[tB.size].gender = '\0';
-			tB.perArray[tB.size].age = '\0';
-			tB.perArray[tB.size].tel = '\0';
-			tB.perArray[tB.size].addr = '\0';
+			for (int j = i; j < tB.size; j++)
+				tB.perArray[j] = tB.perArray[j + 1];
+			//tB.perArray[tB.size-1] = "";//清空最后一行
 			check = true;
-			break;
+			break;//终止上一级的《循环》，而不是跳出if语句，否则写在这里多余
 		}
 	}
 	if (!check)
@@ -169,11 +160,11 @@ void search(string individual) {
 	int i; bool check = false;
 	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
-			cout <<endl << tB.perArray[i].name << "\t"
-				<< tB.perArray[i].gender << "\t"
-				<< tB.perArray[i].age << "\t"
-				<< tB.perArray[i].tel << "\t"
-				<< tB.perArray[i].addr << endl <<endl;
+			cout << endl << tB.perArray[i].name << "\t" << endl
+				<< tB.perArray[i].gender << "\t" << endl
+				<< tB.perArray[i].age << "\t" << endl
+				<< tB.perArray[i].tel << "\t" << endl
+				<< tB.perArray[i].addr << endl << endl;
 			check = true;//用来判断列表中有无此人
 			break;
 		}
@@ -216,14 +207,15 @@ void modify(string individual) {
 //6.清空联系人
 void clearAll() {
 	telBook tB;
-	getItIn(&tB);
-	for (int i = 0; i < tB.size; i++) {
+	//getItIn(&tB);
+	tB.size = 0;//直接修改结构体大小！！
+	/*for (int i = 0; i < tB.size; i++) {
 			tB.perArray[i].name = '\0';
 			tB.perArray[i].gender = '\0';
 			tB.perArray[i].age = '\0';
 			tB.perArray[i].tel = '\0';
 			tB.perArray[i].addr = '\0';
-	}
+	}*/
 	getItOut(&tB);
 	cout << "-------- 清空完成 --------" << endl;
 	system("pause");
@@ -272,6 +264,10 @@ int main() {
 			cin >> cmd;
 			if ((cmd == 'y') || (cmd == 'Y'))
 				clearAll();
+			else {
+				system("pause");
+				system("cls");
+			}
 			break;
 		}
 		case 0:// 0.退出通讯录
