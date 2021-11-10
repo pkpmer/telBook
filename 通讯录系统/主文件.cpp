@@ -151,7 +151,7 @@ void deleteIndvl(string individual) {
 			tB.perArray[tB.size].age = '\0';
 			tB.perArray[tB.size].tel = '\0';
 			tB.perArray[tB.size].addr = '\0';
-			check = false;
+			check = true;
 			break;
 		}
 	}
