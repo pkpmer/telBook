@@ -1,7 +1,7 @@
 #include<iostream>
 #include<string>
 #include<fstream>
-#define max 150//！！数字过大会超过16k
+#define max 100//！！数字过大会超过16k
 using namespace std;
 //显示菜单
 void showMenu() {
@@ -17,11 +17,7 @@ void showMenu() {
 }
 //联系人结构体
 struct person {
-	string name;
-	int gender = 0;//1--男，2--女
-	int age = 0;
-	string tel;
-	string addr;
+	string name, gender, age, tel, addr;
 };
 //通讯录结构体
 struct telBook {
@@ -31,8 +27,7 @@ struct telBook {
 //读取txt文件所有内容到结构体数组中
 void getItIn(telBook* tB) {
 	ifstream infile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-	string name, tel, addr;
-	int gender, age;
+	string name, gender, age, tel, addr;
 	tB->size = 0;
 	while (infile >> name) {
 		infile >> gender >> age >> tel >> addr;
@@ -74,27 +69,19 @@ void addPerson(telBook* tB){
 	}
 	else {
 		//添加姓名
-		string name;
+		string name, gender, age, tel, addr;
 		cout << "*请输入名字:" << endl;
 		cin >> name;
 		tB->perArray[tB->size].name = name;
-		//添加性别
-		int gender = 3;
-		cout << '\n' << "*请输入性别:" << endl
-			<< "1--男，2--女 " << endl;
+		cout << '\n' << "*请输入性别:" << endl;
 		cin >> gender;
 		tB->perArray[tB->size].gender = gender;
-		//添加年龄
-		int age = 0;
-		cout << '\n' << "*请输入年龄:" << endl;//建议修改为捕捉回车键
+		cout << '\n' << "*请输入年龄:" << endl;
 		cin >> age;
-		//添加电话
-		string tel;
+		tB->perArray[tB->size].age = age;
 		cout << '\n' << "*请输入电话:" << endl;
 		cin >> tel;
 		tB->perArray[tB->size].tel = tel;
-		//添加住址
-		string addr;
 		cout << '\n' << "*请输入住址:" << endl;
 		cin >> addr;
 		tB->perArray[tB->size].addr = addr;
@@ -140,7 +127,7 @@ void showAll() {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
 	getItIn(&tB);
 	for (int i = 0; i < tB.size; i++) {
 		cout << tB.perArray[i].name << "\t"
-			<< (tB.perArray[i].gender == 1 ? "男" : "女") << "\t"
+			<< tB.perArray[i].gender << "\t"
 			<< tB.perArray[i].age << "\t"
 			<< tB.perArray[i].tel << "\t"
 			<< tB.perArray[i].addr << "\t"
@@ -155,7 +142,6 @@ void showAll() {//应该也可以使用传值的方式，因为只是起到了一个显示的作用
 void deleteIndvl(string individual) {
 	telBook tB;
 	getItIn(&tB);
-	--tB.size;//多记了一行
 	int i; bool check = false;
 	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
@@ -166,11 +152,11 @@ void deleteIndvl(string individual) {
 				tB.perArray[j].tel = tB.perArray[j + 1].tel;
 				tB.perArray[j].addr = tB.perArray[j + 1].addr;
 			}
-			tB.perArray[tB.size].name = "";//清空最后一行
-			tB.perArray[tB.size].gender = 0;
-			tB.perArray[tB.size].age = 0;
-			tB.perArray[tB.size].tel = "";
-			tB.perArray[tB.size].addr = "";
+			tB.perArray[tB.size].name = '\0';//清空最后一行
+			tB.perArray[tB.size].gender = '\0';
+			tB.perArray[tB.size].age = '\0';
+			tB.perArray[tB.size].tel = '\0';
+			tB.perArray[tB.size].addr = '\0';
 			check = false;
 			break;
 		}
@@ -186,12 +172,11 @@ void deleteIndvl(string individual) {
 void search(string individual) {
 	telBook tB;
 	getItIn(&tB);
-	--tB.size;//多记了一行
 	int i; bool check = false;
 	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
 			cout <<endl << tB.perArray[i].name << "\t"
-				<< (tB.perArray[i].gender == 1 ? "男" : "女") << "\t"
+				<< tB.perArray[i].gender << "\t"
 				<< tB.perArray[i].age << "\t"
 				<< tB.perArray[i].tel << "\t"
 				<< tB.perArray[i].addr << endl <<endl;
@@ -209,17 +194,12 @@ void search(string individual) {
 void modify(string individual) {
 	telBook tB;
 	getItIn(&tB);
-	--tB.size;//多记了一行
-	string name;
+	string name, gender, age, tel, addr;
 	cout << "*请输入名字:" << endl;cin >> name;
-	int gender = 3;
-	cout << '\n' << "*请输入性别:" << endl<< "1--男，2--女 " << endl;cin >> gender;
-	int age = 0;
+	cout << '\n' << "*请输入性别:" << endl; cin >> gender;
 	cout << '\n' << "*请输入年龄:" << endl; cin >> age;
-	string tel;
-	cout << '\n' << "*请输入电话:" << endl;cin >> tel;
-	string addr;
-	cout << '\n' << "*请输入住址:" << endl;cin >> addr;
+	cout << '\n' << "*请输入电话:" << endl; cin >> tel;
+	cout << '\n' << "*请输入住址:" << endl; cin >> addr;
 	int i; bool check = false;
 	for (i = 0; i < tB.size; i++) {
 		if (tB.perArray[i].name == individual) {
@@ -240,16 +220,15 @@ void modify(string individual) {
 	system("cls");
 }
 //6.清空联系人
-void destroy() {
+void clearAll() {
 	telBook tB;
 	getItIn(&tB);
-	--tB.size;//多记了一行
 	for (int i = 0; i < tB.size; i++) {
-			tB.perArray[tB.size].name = "";
-			tB.perArray[tB.size].gender = 0;
-			tB.perArray[tB.size].age = 0;
-			tB.perArray[tB.size].tel = "";
-			tB.perArray[tB.size].addr = "";
+			tB.perArray[i].name = '\0';
+			tB.perArray[i].gender = '\0';
+			tB.perArray[i].age = '\0';
+			tB.perArray[i].tel = '\0';
+			tB.perArray[i].addr = '\0';
 	}
 	getItOut(&tB);
 	cout << "-------- 清空完成 --------" << endl;
@@ -295,12 +274,10 @@ int main() {
 		}
 		case 6: {// 6.清空联系人
 			cout << endl << "确认删除[y/n]:";
-			string dsty;//字符串必须定义大小
-			cin >> dsty;
-			if ((dsty == "y") || (dsty == "Y"))
-				destroy();
-			system("pause");
-			system("cls");
+			char cmd;//字符串必须定义大小
+			cin >> cmd;
+			if ((cmd == 'y') || (cmd == 'Y'))
+				clearAll();
 			break;
 		}
 		case 0:// 0.退出通讯录
