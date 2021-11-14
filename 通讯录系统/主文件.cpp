@@ -1,7 +1,8 @@
 #include<iostream>
 #include<string>
 #include<fstream>
-#define max 100//！！数字过大会超过16k
+#define max 3000//！！数字过大会超过16k
+//2021/11/14开辟了堆区内存
 using namespace std;
 //显示菜单
 void showMenu() {
@@ -36,7 +37,7 @@ void getItIn(telBook* tB) {
 		tB->perArray[tB->size].age = age;
 		tB->perArray[tB->size].tel = tel;
 		tB->perArray[tB->size].addr = addr;
-		(tB->size)++;//暂时假设数组大小不会超过150，所以没有做检验
+		(tB->size)++;//暂时假设数组大小不会超过100，所以没有做检验
 	}
 	infile.close();
 }
@@ -61,8 +62,7 @@ void getItOut(telBook* tB) {
 	outFile.close();
 }
 //1.添加联系人
-void addPerson(telBook* tB){//首行空行的bug仍然存在
-	//判断通讯录是否已满
+void addPerson(telBook* tB){
 	if (tB->size == max) { //"->"是指针的指向运算符，常与数据体联用，表示取值
 		cout << "通讯录已满!";
 		return;
@@ -118,29 +118,32 @@ void addPerson(telBook* tB){//首行空行的bug仍然存在
 }
 //2.显示所有联系人
 void showAll() {
-	telBook tB;
-	getItIn(&tB);
-	for (int i = 0; i < tB.size; i++) {
-		cout << tB.perArray[i].name << "\t"
-			<< tB.perArray[i].gender << "\t"
-			<< tB.perArray[i].age << "\t"
-			<< tB.perArray[i].tel << "\t"
-			<< tB.perArray[i].addr << "\t"
+	telBook* tB = new telBook;//动态分配内存，new；
+	//可以认为telBook* tB = new telBook是在telBook* tB后面加了个注释，
+	//或者是你的这个指针是指想哪一块儿区域
+	getItIn(tB);
+	for (int i = 0; i < tB->size; i++) {
+		cout << tB->perArray[i].name << "\t"
+			<< tB->perArray[i].gender << "\t"
+			<< tB->perArray[i].age << "\t"
+			<< tB->perArray[i].tel << "\t"
+			<< tB->perArray[i].addr << "\t"
 			<< endl << endl;
 	}
 	cout << "---------- 以上 ----------" << endl;
+	delete tB;
 	system("pause");
 	system("cls");//函数退出后结构体会被直接释放
 }
 //3.删除联系人
 void deleteIndvl(string individual) {
-	telBook tB;
-	getItIn(&tB);
+	telBook* tB = new telBook;
+	getItIn(tB);
 	int i; bool check = false;
-	for (i = 0; i < tB.size; i++) {
-		if (tB.perArray[i].name == individual) {
-			for (int j = i; j < tB.size; j++)
-				tB.perArray[j] = tB.perArray[j + 1];
+	for (i = 0; i < tB->size; i++) {
+		if (tB->perArray[i].name == individual) {
+			for (int j = i; j < tB->size; j++)
+				tB->perArray[j] = tB->perArray[j + 1];
 			//tB.perArray[tB.size-1] = "";//清空最后一行
 			check = true;
 			break;//终止上一级的《循环》，而不是跳出if语句，否则写在这里多余
@@ -148,23 +151,24 @@ void deleteIndvl(string individual) {
 	}
 	if (!check)
 		cout << endl << "*联系人不存在" << endl << endl;
-	getItOut(&tB);
+	getItOut(tB);
 	cout << "-------- 删除完成 --------" << endl;
+	delete tB;
 	system("pause");
 	system("cls");
 }
 //4.查找联系人
 void search(string individual) {
-	telBook tB;
-	getItIn(&tB);
+	telBook* tB = new telBook;
+	getItIn(tB);
 	int i; bool check = false;
-	for (i = 0; i < tB.size; i++) {
-		if (tB.perArray[i].name == individual) {
-			cout << endl << tB.perArray[i].name << "\t" << endl
-				<< tB.perArray[i].gender << "\t" << endl
-				<< tB.perArray[i].age << "\t" << endl
-				<< tB.perArray[i].tel << "\t" << endl
-				<< tB.perArray[i].addr << endl << endl;
+	for (i = 0; i < tB->size; i++) {
+		if (tB->perArray[i].name == individual) {
+			cout << endl << tB->perArray[i].name << "\t" << endl
+				<< tB->perArray[i].gender << "\t" << endl
+				<< tB->perArray[i].age << "\t" << endl
+				<< tB->perArray[i].tel << "\t" << endl
+				<< tB->perArray[i].addr << endl << endl;
 			check = true;//用来判断列表中有无此人
 			break;
 		}
@@ -172,13 +176,14 @@ void search(string individual) {
 	if(!check)
 		cout << endl << "*查无此人" << endl << endl;
 	cout << "-------- 查询完成 --------" << endl;
+	delete tB;
 	system("pause");
 	system("cls");
 }
 //5.修改联系人
 void modify(string individual) {
-	telBook tB;
-	getItIn(&tB);
+	telBook* tB = new telBook;
+	getItIn(tB);
 	string name, gender, age, tel, addr;
 	cout << "*请输入名字:" << endl;cin >> name;
 	cout << '\n' << "*请输入性别:" << endl; cin >> gender;
@@ -186,13 +191,13 @@ void modify(string individual) {
 	cout << '\n' << "*请输入电话:" << endl; cin >> tel;
 	cout << '\n' << "*请输入住址:" << endl; cin >> addr;
 	int i; bool check = false;
-	for (i = 0; i < tB.size; i++) {
-		if (tB.perArray[i].name == individual) {
-			tB.perArray[i].name = name;
-			tB.perArray[i].gender = gender;
-			tB.perArray[i].age = age;
-			tB.perArray[i].tel = tel;
-			tB.perArray[i].addr = addr;
+	for (i = 0; i < tB->size; i++) {
+		if (tB->perArray[i].name == individual) {
+			tB->perArray[i].name = name;
+			tB->perArray[i].gender = gender;
+			tB->perArray[i].age = age;
+			tB->perArray[i].tel = tel;
+			tB->perArray[i].addr = addr;
 			check = true;//用来判断列表中有无此人
 			break;
 		}
@@ -200,15 +205,16 @@ void modify(string individual) {
 	if (!check)
 		cout << endl << "*联系人不存在" << endl << endl;
 	cout << "-------- 修改完成 --------" << endl;
-	getItOut(&tB);
+	getItOut(tB);
+	delete tB;
 	system("pause");
 	system("cls");
 }
 //6.清空联系人
 void clearAll() {
-	telBook tB;
+	telBook* tB = new telBook;
 	//getItIn(&tB);
-	tB.size = 0;//直接修改结构体大小！！
+	tB->size = 0;//直接修改结构体大小！！
 	/*for (int i = 0; i < tB.size; i++) {
 			tB.perArray[i].name = '\0';
 			tB.perArray[i].gender = '\0';
@@ -216,7 +222,7 @@ void clearAll() {
 			tB.perArray[i].tel = '\0';
 			tB.perArray[i].addr = '\0';
 	}*/
-	getItOut(&tB);
+	getItOut(tB);
 	cout << "-------- 清空完成 --------" << endl;
 	system("pause");
 	system("cls");
@@ -224,16 +230,19 @@ void clearAll() {
 //主函数
 int main() {
 	showMenu();
-	telBook tB; //创建结构体变量，可以认为telBook和int、double一个意思，只过是自己定义的
-	tB.size = 0;
+	//telBook tB; //创建结构体变量，可以认为telBook和int、double一个意思，只过是自己定义的
 	int slct = 0;//输入的数字
 	cin >> slct;
 	bool flag = true;
 	while (flag) {
 		switch (slct) {
-		case 1:// 1.添加联系人
-			addPerson(&tB);
+		case 1: {// 1.添加联系人
+			telBook* tB = new telBook;
+			tB->size = 0;
+			addPerson(tB);
+			delete tB;
 			break;
+		}
 		case 2:// 2.显示联系人
 			showAll();
 			break;
