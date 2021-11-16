@@ -26,7 +26,8 @@ struct telBook {
 	int size = 0;
 };
 //读取txt文件所有内容到结构体数组中
-void getItIn(telBook* tB) {
+void getItIn(telBook* &tB) {
+	tB = new telBook;
 	ifstream infile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
 	string name, gender, age, tel, addr;
 	tB->size = 0;
@@ -42,7 +43,7 @@ void getItIn(telBook* tB) {
 	infile.close();
 }
 //读取结构体数组所有内容到txt文件中，需要与getItIn配合使用
-void getItOut(telBook* tB) {
+void getItOut(telBook* &tB) {//一般和getItIn配合使用，getItIn中已经给指针分配过内存了，故不用再分配
 	ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
 	if (!outFile)//判断文件是否打开
 		cerr << "之前操作无法写入库内！";
@@ -62,13 +63,14 @@ void getItOut(telBook* tB) {
 	outFile.close();
 }
 //1.添加联系人
-void addPerson(telBook* tB){
+void addPerson(){
+	telBook* tB = NULL;
+	getItIn(tB);
 	if (tB->size == max) { //"->"是指针的指向运算符，常与数据体联用，表示取值
 		cout << "通讯录已满!";
 		return;
 	}
 	else {
-		//添加姓名
 		string name, gender, age, tel, addr;
 		cout << "*请输入名字:" << endl;cin >> name;
 		tB->perArray[tB->size].name = name;
@@ -80,45 +82,17 @@ void addPerson(telBook* tB){
 		tB->perArray[tB->size].tel = tel;
 		cout << '\n' << "*请输入住址:" << endl;cin >> addr;
 		tB->perArray[tB->size].addr = addr;
-		ifstream inFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-		if (!inFile)//判断文件是否打开
-			cerr << "无法打开文件！" << endl;
-		ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt", ios_base::app);
-		char checkEmpty;
-		inFile >> checkEmpty;
-		if (inFile.eof()) {
-			if (!outFile)//判断文件是否打开
-				cerr << "之前操作无法写入库内！";
-			else {
-				outFile << tB->perArray[tB->size].name << "\t"
-					<< tB->perArray[tB->size].gender << "\t"
-					<< tB->perArray[tB->size].age << "\t"
-					<< tB->perArray[tB->size].tel << "\t"
-					<< tB->perArray[tB->size].addr;
-				outFile.close();
-			}
-		}
-		else {
-			if (!outFile)//判断文件是否打开
-				cerr << "之前操作无法写入库内！";
-			else {
-				outFile << endl << tB->perArray[tB->size].name << "\t"
-					<< tB->perArray[tB->size].gender << "\t"
-					<< tB->perArray[tB->size].age << "\t"
-					<< tB->perArray[tB->size].tel << "\t"
-					<< tB->perArray[tB->size].addr;
-				outFile.close();
-			}
-		}
-		tB->size++;
+		++tB->size;//不加这个最后一行显示不了
+		getItOut(tB);
 		cout << "-------- 输入完成 --------" << endl;
 	}
+	delete tB;
 	system("pause");
 	system("cls");//清除屏幕
 }
 //2.显示所有联系人
 void showAll() {
-	telBook* tB = new telBook;//动态分配内存，new；
+	telBook* tB = NULL;//动态分配内存，new；
 	//可以认为telBook* tB = new telBook是在telBook* tB后面加了个注释，
 	//或者是你的这个指针是指想哪一块儿区域
 	getItIn(tB);
@@ -137,7 +111,7 @@ void showAll() {
 }
 //3.删除联系人
 void deleteIndvl(string individual) {
-	telBook* tB = new telBook;
+	telBook* tB = NULL;
 	getItIn(tB);
 	int i; bool check = false;
 	for (i = 0; i < tB->size; i++) {
@@ -151,7 +125,7 @@ void deleteIndvl(string individual) {
 	}
 	if (!check)
 		cout << endl << "*联系人不存在" << endl << endl;
-	getItOut(tB);
+	getItOut(tB);//没有在该函数里为tB再分配内存，因为前面已经分配过了
 	cout << "-------- 删除完成 --------" << endl;
 	delete tB;
 	system("pause");
@@ -159,7 +133,7 @@ void deleteIndvl(string individual) {
 }
 //4.查找联系人
 void search(string individual) {
-	telBook* tB = new telBook;
+	telBook* tB = NULL;
 	getItIn(tB);
 	int i; bool check = false;
 	for (i = 0; i < tB->size; i++) {
@@ -182,7 +156,7 @@ void search(string individual) {
 }
 //5.修改联系人
 void modify(string individual) {
-	telBook* tB = new telBook;
+	telBook* tB = NULL;
 	getItIn(tB);
 	string name, gender, age, tel, addr;
 	cout << "*请输入名字:" << endl;cin >> name;
@@ -212,7 +186,7 @@ void modify(string individual) {
 }
 //6.清空联系人
 void clearAll() {
-	telBook* tB = new telBook;
+	telBook* tB = new telBook;//需要在该函数里为tB分配内存，因为getItOut不会分配
 	//getItIn(&tB);
 	tB->size = 0;//直接修改结构体大小！！
 	/*for (int i = 0; i < tB.size; i++) {
@@ -236,13 +210,9 @@ int main() {
 	bool flag = true;
 	while (flag) {
 		switch (slct) {
-		case 1: {// 1.添加联系人
-			telBook* tB = new telBook;
-			tB->size = 0;
-			addPerson(tB);
-			delete tB;
+		case 1: // 1.添加联系人
+			addPerson();
 			break;
-		}
 		case 2:// 2.显示联系人
 			showAll();
 			break;
