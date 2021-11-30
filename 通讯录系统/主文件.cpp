@@ -1,8 +1,7 @@
 #include<iostream>
 #include<string>
 #include<fstream>
-#define max 3000//！！数字过大会超过16k
-//2021/11/14开辟了堆区内存
+#include "getIO.h"
 using namespace std;
 //显示菜单
 void showMenu() {
@@ -16,57 +15,12 @@ void showMenu() {
 		<< "------ 0.退出通讯录 ------" << endl
 		<< "**************************" << endl;
 }
-//联系人结构体
-struct person {
-	string name, gender, age, tel, addr;
-};
-//通讯录结构体
-struct telBook {
-	struct person perArray[max];//联系人数组
-	int size = 0;
-};
-//读取txt文件所有内容到结构体数组中
-void getItIn(telBook* &tB) {
-	tB = new telBook;
-	ifstream infile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-	string name, gender, age, tel, addr;
-	tB->size = 0;
-	while (infile >> name) {
-		infile >> gender >> age >> tel >> addr;
-		tB->perArray[tB->size].name = name;
-		tB->perArray[tB->size].gender = gender;
-		tB->perArray[tB->size].age = age;
-		tB->perArray[tB->size].tel = tel;
-		tB->perArray[tB->size].addr = addr;
-		(tB->size)++;//暂时假设数组大小不会超过100，所以没有做检验
-	}
-	infile.close();
-}
-//读取结构体数组所有内容到txt文件中，需要与getItIn配合使用
-void getItOut(telBook* &tB) {//一般和getItIn配合使用，getItIn中已经给指针分配过内存了，故不用再分配
-	ofstream outFile("D:\\GitHub\\telBook\\通讯录系统\\通讯库.txt");
-	if (!outFile)//判断文件是否打开
-		cerr << "之前操作无法写入库内！";
-	else {
-		outFile << tB->perArray[0].name << "\t"
-			<< tB->perArray[0].gender << "\t"
-			<< tB->perArray[0].age << "\t"
-			<< tB->perArray[0].tel << "\t"
-			<< tB->perArray[0].addr;
-		for (int i = 1; i < tB->size; i++)
-			outFile << endl << tB->perArray[i].name << "\t"
-			<< tB->perArray[i].gender << "\t"
-			<< tB->perArray[i].age << "\t"
-			<< tB->perArray[i].tel << "\t"
-			<< tB->perArray[i].addr;
-	}
-	outFile.close();
-}
 //1.添加联系人
 void addPerson(){
 	telBook* tB = NULL;
+	tB = new telBook;
 	getItIn(tB);
-	if (tB->size == max) { //"->"是指针的指向运算符，常与数据体联用，表示取值
+	if (tB->size == 3000) { //"->"是指针的指向运算符，常与数据体联用，表示取值
 		cout << "通讯录已满!";
 		return;
 	}
@@ -87,6 +41,7 @@ void addPerson(){
 		cout << "-------- 输入完成 --------" << endl;
 	}
 	delete tB;
+	tB = NULL;
 	system("pause");
 	system("cls");//清除屏幕
 }
@@ -95,6 +50,7 @@ void showAll() {
 	telBook* tB = NULL;//动态分配内存，new；
 	//可以认为telBook* tB = new telBook是在telBook* tB后面加了个注释，
 	//或者是你的这个指针是指想哪一块儿区域
+	tB = new telBook;
 	getItIn(tB);
 	for (int i = 0; i < tB->size; i++) {
 		cout << tB->perArray[i].name << "\t"
@@ -106,12 +62,14 @@ void showAll() {
 	}
 	cout << "---------- 以上 ----------" << endl;
 	delete tB;
+	tB = NULL;
 	system("pause");
 	system("cls");//函数退出后结构体会被直接释放
 }
 //3.删除联系人
 void deleteIndvl(string individual) {
 	telBook* tB = NULL;
+	tB = new telBook;
 	getItIn(tB);
 	int i; bool check = false;
 	for (i = 0; i < tB->size; i++) {
@@ -127,13 +85,14 @@ void deleteIndvl(string individual) {
 		cout << endl << "*联系人不存在" << endl << endl;
 	getItOut(tB);//没有在该函数里为tB再分配内存，因为前面已经分配过了
 	cout << "-------- 删除完成 --------" << endl;
-	delete tB;
+	delete tB;	tB = NULL;
 	system("pause");
 	system("cls");
 }
 //4.查找联系人
 void search(string individual) {
 	telBook* tB = NULL;
+	tB = new telBook;
 	getItIn(tB);
 	int i; bool check = false;
 	for (i = 0; i < tB->size; i++) {
@@ -150,13 +109,13 @@ void search(string individual) {
 	if(!check)
 		cout << endl << "*查无此人" << endl << endl;
 	cout << "-------- 查询完成 --------" << endl;
-	delete tB;
+	delete tB;	tB = NULL;
 	system("pause");
 	system("cls");
 }
 //5.修改联系人
 void modify(string individual) {
-	telBook* tB = NULL;
+	telBook* tB = NULL; tB = new telBook;
 	getItIn(tB);
 	string name, gender, age, tel, addr;
 	cout << "*请输入名字:" << endl;cin >> name;
@@ -180,24 +139,17 @@ void modify(string individual) {
 		cout << endl << "*联系人不存在" << endl << endl;
 	cout << "-------- 修改完成 --------" << endl;
 	getItOut(tB);
-	delete tB;
+	delete tB;	tB = NULL;
 	system("pause");
 	system("cls");
 }
 //6.清空联系人
 void clearAll() {
 	telBook* tB = new telBook;//需要在该函数里为tB分配内存，因为getItOut不会分配
-	//getItIn(&tB);
 	tB->size = 0;//直接修改结构体大小！！
-	/*for (int i = 0; i < tB.size; i++) {
-			tB.perArray[i].name = '\0';
-			tB.perArray[i].gender = '\0';
-			tB.perArray[i].age = '\0';
-			tB.perArray[i].tel = '\0';
-			tB.perArray[i].addr = '\0';
-	}*/
 	getItOut(tB);
 	cout << "-------- 清空完成 --------" << endl;
+	delete tB; tB = NULL;
 	system("pause");
 	system("cls");
 }

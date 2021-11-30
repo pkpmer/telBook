@@ -18,5 +18,16 @@
     <ClCompile Include="主文件.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="getItOut.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="getItIn.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="getIO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
